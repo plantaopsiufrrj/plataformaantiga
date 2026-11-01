@@ -1,0 +1,1907 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="plantao-build" content="2026-10-05-fix-nav-2">
+  <title>Plantão Psicológico</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    body { background: #f5f7f6; color: #2c3e35; }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      background: #ffffff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    header .logo { font-size: 20px; font-weight: bold; }
+    header nav a {
+      margin-left: 20px;
+      text-decoration: none;
+      color: #2c3e35;
+      font-weight: 500;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .hero h1 { font-size: 32px; margin-bottom: 10px; }
+    .hero p { font-size: 18px; margin-bottom: 25px; color: #4a5c52; }
+
+    .btn {
+      background: #3f7f5f;
+      color: #fff;
+      border: none;
+      padding: 14px 28px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .btn:hover { background: #345f47; }
+
+    section { padding: 40px 20px; max-width: 800px; margin: 0 auto; }
+    section h2 { margin-bottom: 15px; }
+
+    .etapas {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    .etapa {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      width: 180px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #7a8a80;
+      font-size: 14px;
+    }
+
+    /* TELA DE LOGIN */
+    #login {
+      display: none;
+      min-height: 90vh;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .login-box {
+      background: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 360px;
+    }
+    .login-box h2 { text-align: center; margin-bottom: 20px; }
+    .login-box label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .login-box input, .login-box select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    #registrarFrequencia, #registrarFalta, #frequenciasAdmin, #retornarCliente, #presencial {
+      display: none;
+      min-height: 90vh;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    #registrarFrequencia, #registrarFalta, #frequenciasAdmin {
+      display: none;
+      min-height: 90vh;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    #minhasSupervisoes, #conferirPresenca, #enviarFotos {
+      display: none;
+    }
+
+    .login-box .btn { width: 100%; }
+    .voltar {
+      display: block;
+      text-align: center;
+      margin-top: 15px;
+      color: #3f7f5f;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    #mensagemLogin {
+      text-align: center;
+      font-size: 14px;
+      margin-bottom: 12px;
+      min-height: 18px;
+    }
+    #mensagemLogin.erro, #mensagemPainel.erro, #mensagemMeusPlantoes.erro { color: #c0392b; }
+    #mensagemLogin.sucesso, #mensagemPainel.sucesso, #mensagemMeusPlantoes.sucesso { color: #2e7d4f; }
+
+    #mensagemMeusPlantoes {
+      font-size: 14px;
+      margin-bottom: 16px;
+      min-height: 18px;
+    }
+
+    /* TELA MEUS PLANTÕES */
+    #meusPlantoes {
+      display: none;
+      min-height: 90vh;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    #meusPlantoes .login-box { max-width: 420px; }
+
+    .resumo-plantao {
+      margin-top: 24px;
+      background: #f5f7f6;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: left;
+    }
+    .resumo-plantao h3 {
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+    .resumo-plantao p {
+      font-size: 15px;
+      line-height: 1.7;
+      color: #2c3e35;
+    }
+
+    /* JARDIM DO ADMINISTRADOR */
+    #jardimAdmin {
+      display: none;
+      min-height: 90vh;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .janela-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f5f7f6;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      font-size: 14px;
+      text-align: left;
+    }
+    .janela-item .status-aberta { color: #2e7d4f; font-weight: 600; }
+    .janela-item .status-fechada { color: #7a8a80; }
+    .janela-item button {
+      background: #fff;
+      border: 1px solid #d7ded9;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .janela-item button:hover { background: #eef5f0; }
+
+    #painel {
+      display: none;
+      padding: 50px 20px;
+      text-align: center;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    #painel h1 { font-size: 26px; margin-bottom: 4px; }
+    #painel .perfil { color: #4a5c52; margin-bottom: 30px; }
+
+    .menu-painel {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .menu-painel button {
+      background: #fff;
+      border: 1px solid #d7ded9;
+      color: #2c3e35;
+      padding: 16px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .menu-painel button:hover {
+      background: #eef5f0;
+      border-color: #3f7f5f;
+    }
+    .btn-sair {
+      margin-top: 24px;
+      background: transparent;
+      border: none;
+      color: #c0392b;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PÁGINA INICIAL -->
+  <div id="inicio">
+    <header>
+      <div class="logo">🌿 Plantão Psicológico</div>
+      <nav>
+        <a href="#inicio">Início</a>
+        <a href="#sobre">Sobre</a>
+        <a href="#comofunciona">Como funciona</a>
+        <a href="#projeto">Projeto</a>
+        <a href="#" onclick="mostrarLogin(); return false;">Área do Plantonista</a>
+      </nav>
+    </header>
+
+    <div class="hero">
+      <h1>Plantão Psicológico</h1>
+      <p>Um espaço de escuta e acolhimento</p>
+      <p>Atendimento psicológico gratuito, oferecido por estudantes em formação, com supervisão qualificada.</p>
+      <button class="btn" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSfPzBO8NqsjTlClXcIL7-JrhIsFgM5Z46Y0BhjjQ8bVDEXjdA/viewform?usp=dialog', '_blank')">
+        Solicitar atendimento
+      </button>
+    </div>
+
+    <section id="sobre">
+      <h2>O que é o Plantão Psicológico?</h2>
+      <p>O Plantão Psicológico é um serviço de acolhimento breve, voltado a pessoas que buscam um espaço de escuta em momentos de dificuldade emocional.</p>
+    </section>
+
+    <section id="comofunciona">
+      <h2>Como funciona?</h2>
+      <div class="etapas">
+        <div class="etapa"><strong>1. Solicite</strong><p>Preencha o formulário de solicitação.</p></div>
+        <div class="etapa"><strong>2. Aguarde</strong><p>Sua solicitação será analisada pela equipe.</p></div>
+        <div class="etapa"><strong>3. Atendimento</strong><p>Você será chamado(a) para o atendimento.</p></div>
+      </div>
+    </section>
+
+    <section id="projeto">
+      <h2>Sobre o projeto</h2>
+      <p>Este projeto faz parte de um Trabalho de Conclusão de Curso da UFRRJ.</p>
+    </section>
+
+    <footer>Plantão Psicológico • UFRRJ</footer>
+  </div>
+
+  <!-- TELA DE LOGIN -->
+  <div id="login">
+    <div class="login-box">
+      <h2>Área do Plantonista</h2>
+
+      <div id="mensagemLogin"></div>
+
+      <label for="email">E-mail</label>
+      <input type="email" id="email" placeholder="seuemail@exemplo.com">
+
+      <label for="senha">Senha</label>
+      <input type="password" id="senha" placeholder="Digite sua senha">
+
+      <button class="btn" id="btnEntrar" onclick="fazerLogin()">Entrar</button>
+
+      <span class="voltar" onclick="mostrarInicio()">← Voltar para o início</span>
+    </div>
+  </div>
+
+  <!-- PAINEL DO PLANTONISTA -->
+  <div id="painel">
+    <h1 id="painelSaudacao"></h1>
+    <p class="perfil" id="painelPerfil"></p>
+
+    <div id="mensagemPainel"></div>
+
+    <div class="menu-painel">
+      <button id="btnSolicitarCliente" onclick="solicitarCliente()">📋 Solicitar Cliente</button>
+      <button id="btnRetornarCliente" onclick="acaoPainel('retornarCliente')">🔄 Retornar Cliente</button>
+      <button id="btnSupervisoes" onclick="mostrarMinhasSupervisoes()">🌱 Minhas Supervisões/Treinamentos</button>
+      <button id="btnMeusPlantoes" onclick="mostrarMeusPlantoes()">📁 Meus Plantões</button>
+      <button onclick="mostrarEnviarFotos()" id="btnEnviarFotos">📸 Enviar Fotos</button>
+      <button id="btnMaterialEstudo" disabled title="Em breve">📚 Material de Estudo (em breve)</button>
+      <button id="btnSolicitarPsicologo" disabled title="Em breve">🧑‍🤝‍🧑 Solicitar Psicólogo (em breve)</button>
+      <button id="btnJardimAdmin" onclick="mostrarJardimAdmin()" style="display:none;">🌻 Jardim do Administrador</button>
+    </div>
+
+    <button class="btn-sair" onclick="sair()">Sair</button>
+  </div>
+
+  <!-- TELA MEUS PLANTÕES -->
+  <div id="meusPlantoes">
+    <div class="login-box">
+      <h2>Meus Plantões</h2>
+
+      <div id="mensagemMeusPlantoes"></div>
+
+      <button class="btn" id="btnSolicitarDados" onclick="solicitarDadosClientes()">Solicitar Dados dos Meus Clientes</button>
+
+      <div class="resumo-plantao">
+        <h3>Meu resumo do plantão:</h3>
+        <p id="resumoTexto">Carregando...</p>
+      </div>
+
+      <span class="voltar" onclick="voltarAoPainel()">← Voltar ao painel</span>
+    </div>
+  </div>
+
+  <!-- MINHAS SUPERVISÕES / TREINAMENTOS -->
+  <div id="minhasSupervisoes" style="display:none; min-height:90vh; justify-content:center; align-items:center; padding:20px;">
+    <div class="login-box" style="max-width:480px;">
+      <h2>Minhas Supervisões/Treinamentos</h2>
+      <div class="menu-painel" style="margin-top:20px;">
+        <button onclick="mostrarRegistrarFrequencia()">🗓️ Registrar Frequência</button>
+        <button onclick="mostrarRegistrarFalta()">📝 Registrar Motivo de Falta</button>
+        <button onclick="mostrarConferirPresenca()">✅ Conferir Presença</button>
+      </div>
+      <span class="voltar" onclick="voltarAoPainel()">← Voltar ao painel</span>
+    </div>
+  </div>
+
+  <!-- CONFERIR PRESENÇA -->
+  <div id="conferirPresenca" style="display:none; min-height:90vh; justify-content:center; align-items:center; padding:20px;">
+    <div class="login-box" style="max-width:680px;">
+      <h2>Conferir Presença</h2>
+      <p style="margin:8px 0 18px;color:#4a5c52;">Histórico das suas supervisões e treinamentos.</p>
+      <div id="mensagemConferirPresenca"></div>
+      <div id="listaConferirPresenca">Carregando...</div>
+      <span class="voltar" onclick="mostrarMinhasSupervisoes()">← Voltar para Minhas Supervisões/Treinamentos</span>
+    </div>
+  </div>
+
+  <!-- TELA REGISTRAR FREQUÊNCIA (plantonista) -->
+  <div id="registrarFrequencia">
+    <div class="login-box" style="max-width:480px;">
+      <h2>Registrar Frequência</h2>
+
+      <div id="mensagemFrequencia"></div>
+
+      <!-- Lista de janelas abertas -->
+      <div id="blocoListaJanelas">
+        <h3 style="font-size:15px; margin-bottom:10px;">Janelas abertas no momento</h3>
+        <div id="listaJanelasAbertas">Carregando...</div>
+      </div>
+
+      <!-- Formulário de registro (aparece ao escolher uma janela) -->
+      <div id="blocoFormRegistro" style="display:none;">
+        <p id="janelaSelecionadaInfo" style="margin-bottom:16px; font-weight:500;"></p>
+
+        <div id="camposNarracao">
+          <label for="registroNarrou">Narrou no dia?</label>
+          <select id="registroNarrou">
+            <option value="">Selecione</option>
+            <option value="sim">Sim</option>
+            <option value="nao">Não</option>
+          </select>
+
+          <label for="registroPalavra">Palavra do dia</label>
+          <input type="text" id="registroPalavra" placeholder="Obrigatório">
+        </div>
+
+        <button class="btn" id="btnConfirmarRegistro" onclick="confirmarRegistroFrequencia()">Confirmar Registro</button>
+        <span class="voltar" onclick="cancelarRegistroFrequencia()">← Escolher outra janela</span>
+      </div>
+
+      <span class="voltar" onclick="voltarAoPainel()">← Voltar ao painel</span>
+    </div>
+  </div>
+
+  <!-- TELA REGISTRAR MOTIVO DE FALTA (plantonista) -->
+  <div id="registrarFalta">
+    <div class="login-box" style="max-width:480px;">
+      <h2>Registrar Motivo de Falta</h2>
+
+      <div id="mensagemFalta"></div>
+
+      <!-- Lista de todos os dias cadastrados (ativos e inativos) -->
+      <div id="blocoListaFalta">
+        <h3 style="font-size:15px; margin-bottom:10px;">Selecione o dia</h3>
+        <div id="listaTodasJanelas">Carregando...</div>
+      </div>
+
+      <!-- Formulário de justificativa -->
+      <div id="blocoFormFalta" style="display:none;">
+        <p id="janelaFaltaInfo" style="margin-bottom:16px; font-weight:500;"></p>
+
+        <label for="motivoFalta">Motivo da ausência</label>
+        <textarea id="motivoFalta" rows="4" style="width:100%; padding:10px; margin-bottom:16px; border:1px solid #ccc; border-radius:6px; font-size:14px; font-family:inherit; resize:vertical;" placeholder="Explique o motivo da ausência..."></textarea>
+
+        <button class="btn" id="btnEnviarJustificativa" onclick="enviarJustificativa()">Enviar Justificativa</button>
+        <span class="voltar" onclick="cancelarJustificativa()">← Escolher outro dia</span>
+      </div>
+
+      <span class="voltar" onclick="voltarAoPainel()">← Voltar ao painel</span>
+    </div>
+  </div>
+
+  <!-- TELA ENVIAR FOTOS (plantonista) -->
+  <div id="enviarFotos" style="display:none; min-height:90vh; justify-content:center; align-items:center; padding:20px;">
+    <div class="login-box" style="max-width:480px;">
+      <h2>Enviar Fotos</h2>
+
+      <p style="margin-bottom:18px; line-height:1.5;">
+        Você tem alguma foto legal do seu plantão que gostaria de enviar para a gente? Compartilhe conosco abaixo🌳🪑🤗
+      </p>
+
+      <div id="mensagemFotos"></div>
+
+      <label for="arquivosFotos">Fotos (JPG ou PNG, pode escolher mais de uma)</label>
+      <input type="file" id="arquivosFotos" accept="image/jpeg,image/png" multiple style="margin-bottom:16px;">
+
+      <button class="btn" id="btnEnviarFotosConfirmar" onclick="enviarFotosConfirmar()">Enviar</button>
+
+      <span class="voltar" onclick="voltarAoPainel()">← Voltar ao painel</span>
+    </div>
+  </div>
+
+  <!-- JARDIM DO ADMINISTRADOR (painel do bolsista) -->
+  <div id="jardimAdmin">
+    <div class="login-box" style="max-width:560px;">
+      <h2>Jardim do Administrador</h2>
+<button class="btn" onclick="mostrarDadosPlantao()" style="margin-bottom:10px;">📊 Dados do Plantão</button>
+      <button class="btn" onclick="mostrarParticipantes()" style="margin-bottom:10px;">👥 Verificar participantes ativos</button>
+      <button class="btn" onclick="mostrarFrequenciasAdmin()" style="margin-bottom:10px;">🗓️ Frequências dos Plantonistas</button>
+      <button class="btn" onclick="mostrarVerificarPraticantes()" style="margin-bottom:10px;">📥 Verificar Praticantes</button>
+      <button class="btn" id="btnManutencao" onclick="alternarManutencao()" style="margin-bottom:20px;">🔧 Manutenção: ...</button>
+
+      
+
+      
+
+      <span class="voltar" onclick="voltarAoPainel()">← Voltar ao painel</span>
+    </div>
+  </div>
+  <div id="frequenciasAdmin" style="display:none; min-height:90vh; justify-content:center; align-items:center; padding:20px;">
+    <div class="login-box" style="max-width:560px;">
+      <h2>Frequências dos Plantonistas</h2>
+      <div class="menu-painel" style="margin-top:20px;">
+        <button onclick="mostrarNovaJanelaAdmin()">🗓️ Abrir nova janela de frequência</button>
+        <button onclick="mostrarJustificativasAdmin()">📝 Justificativas pendentes</button>
+      </div>
+      <span class="voltar" onclick="voltarAoJardimAdmin()">← Voltar ao Jardim do Administrador</span>
+    </div>
+  </div>
+
+  <div id="novaJanelaAdmin" style="display:none;">
+    <div class="login-box" style="max-width:560px;">
+      <h2>Janelas de frequência</h2>
+      <div id="mensagemAdmin"></div>
+      <h3 style="font-size:15px; margin-bottom:10px;">Abrir nova janela de frequência</h3>
+
+      <label for="janelaData">Data</label>
+      <input type="date" id="janelaData">
+
+      <label for="janelaInicio">Hora de início</label>
+      <input type="time" id="janelaInicio">
+
+      <label for="janelaFim">Hora de fim</label>
+      <input type="time" id="janelaFim">
+
+      <label for="janelaTipo">Tipo</label>
+      <select id="janelaTipo" style="width:100%; padding:10px; margin-bottom:16px; border:1px solid #ccc; border-radius:6px; font-size:14px;">
+        <option value="supervisao_plantonistas">Supervisão Plantonistas</option>
+        <option value="supervisao_treinandos">Supervisão Treinandos</option>
+        <option value="treinamento_teorico">Treinamento teórico</option>
+      </select>
+
+      <button class="btn" id="btnAbrirJanela" onclick="abrirJanela()">Abrir Janela</button>
+
+      <h3 style="font-size:15px; margin:24px 0 10px;">Janelas cadastradas</h3>
+      <div id="listaJanelas">Carregando...</div>
+      <span class="voltar" onclick="mostrarFrequenciasAdmin()">← Voltar para Frequências dos Plantonistas</span>
+    </div>
+  </div>
+
+<div id="painelJustificativas" style="display:none; margin-top:24px; text-align:left;">
+        <h3 style="font-size:16px; margin-bottom:10px;">Justificativas pendentes</h3>
+        <div id="mensagemJustificativasAdmin"></div>
+        <div id="listaJustificativasAdmin">Carregando...</div>
+        <button class="btn" onclick="carregarJustificativasAdmin()" style="margin-top:12px;">↻ Atualizar lista</button>
+        <span class="voltar" onclick="mostrarFrequenciasAdmin()">← Voltar para Frequências dos Plantonistas</span>
+      </div>
+
+  <!-- VERIFICAR PRATICANTES (download de relatórios por período, dentro do Jardim do Administrador) -->
+  <div id="verificarPraticantes" style="display:none; min-height:90vh; justify-content:center; align-items:center; padding:20px;">
+    <div class="login-box" style="max-width:480px;">
+      <h2>Verificar Praticantes</h2>
+
+      <div id="mensagemPraticantes"></div>
+
+      <label for="praticantesMesInicio">De (mês/ano)</label>
+      <input type="month" id="praticantesMesInicio">
+
+      <label for="praticantesMesFim">Até (mês/ano)</label>
+      <input type="month" id="praticantesMesFim">
+
+      <div style="display:flex; flex-direction:column; gap:10px; margin-top:16px;">
+        <button class="btn" onclick="baixarRelatorioPraticantes('atendido')">Baixar lista de atendidos</button>
+        <button class="btn" onclick="baixarRelatorioPraticantes('pendente')">Baixar lista de pendentes</button>
+        <button class="btn" onclick="baixarRelatorioPraticantes('desistente')">Baixar lista de desistentes</button>
+        <button class="btn" onclick="baixarRelatorioPraticantes('geral')">Baixar lista geral</button>
+      </div>
+
+      <span class="voltar" onclick="voltarAoJardimAdmin()">← Voltar ao Jardim do Administrador</span>
+    </div>
+  </div>
+
+  <div id="dadosPlantao" style="display:none;min-height:90vh;justify-content:center;padding:20px;"><div class="login-box" style="max-width:650px;width:100%;"><h2>Dados do Plantão</h2><div id="dadosPlantaoConteudo">Carregando...</div><span class="voltar" onclick="voltarAoPainel()">← Voltar ao painel</span></div></div>
+  <div id="participantes" style="display:none;min-height:90vh;justify-content:center;padding:20px;"><div class="login-box" style="max-width:1000px;width:100%;"><h2>Verificar participantes ativos</h2><div style="display:flex;gap:8px;flex-wrap:wrap;margin:15px 0;"><button class="btn" onclick="baixarParticipantes('Plantonista')">Baixar plantonistas ativos</button><button class="btn" onclick="baixarParticipantes('Treinando')">Baixar treinandos ativos</button><button class="btn" onclick="baixarParticipantes('Todos')">Baixar todos ativos</button></div><div id="listaParticipantes">Carregando...</div><span class="voltar" onclick="voltarAoPainel()">← Voltar ao painel</span></div></div>
+  <div id="retornarCliente"><div class="login-box" style="max-width:560px;width:100%;">
+    <h2>Retornar Cliente</h2><p style="margin:10px 0 16px;">Selecione um cliente pendente para atualizar a situação.</p>
+    <div id="listaClientesPendentes">Carregando...</div>
+    <div id="formRetorno" style="display:none;margin-top:18px;"><h3 id="clienteEscolhido" style="margin-bottom:12px;"></h3>
+      <label for="situacaoCliente">Situação</label><select id="situacaoCliente" onchange="alterarCamposRetorno()" style="width:100%;padding:10px;margin-bottom:16px;border:1px solid #ccc;border-radius:6px;"><option value="">Selecione</option><option value="Atendido">Atendido</option><option value="Desistente">Desistente</option><option value="Transferido">Transferido</option></select>
+      <div id="campoRelatorio" style="display:none;"><label for="arquivoRelatorio">Relatório de atendimento (PDF, DOC ou DOCX)</label><input type="file" id="arquivoRelatorio" accept=".pdf,.doc,.docx" style="width:100%;margin:8px 0 16px;"></div>
+      <div id="campoDetalhe" style="display:none;"><label id="labelDetalhe" for="detalheRetorno"></label><textarea id="detalheRetorno" rows="3" style="width:100%;padding:10px;margin:8px 0 16px;border:1px solid #ccc;border-radius:6px;"></textarea></div>
+      <button class="btn" id="btnSalvarRetorno" onclick="salvarRetornoCliente()">Confirmar</button><span class="voltar" onclick="cancelarRetorno()">← Voltar à lista</span>
+    </div>
+    <button class="btn" style="width:100%;margin-top:18px;" onclick="mostrarPresencial()">＋ Cadastrar plantão presencial</button>
+    <span class="voltar" onclick="voltarAoPainel()">← Voltar ao painel</span></div></div>
+  <div id="presencial"><div class="login-box" style="max-width:560px;width:100%;"><h2>Cadastrar plantão presencial</h2>
+    <p style="margin:8px 0 14px;">Se houver, insira informações básicas sobre o cliente:</p>
+    <label for="presNome">Nome:</label><input id="presNome" type="text" style="width:100%;padding:10px;margin:8px 0 12px;border:1px solid #ccc;border-radius:6px;">
+    <label for="presCurso">Curso:</label><input id="presCurso" type="text" style="width:100%;padding:10px;margin:8px 0 12px;border:1px solid #ccc;border-radius:6px;">
+    <label for="presIdade">Idade:</label><input id="presIdade" type="text" style="width:100%;padding:10px;margin:8px 0 12px;border:1px solid #ccc;border-radius:6px;">
+    <label for="presCidade">Cidade:</label><input id="presCidade" type="text" style="width:100%;padding:10px;margin:8px 0 12px;border:1px solid #ccc;border-radius:6px;">
+    <label for="presEstado">Estado:</label><input id="presEstado" type="text" style="width:100%;padding:10px;margin:8px 0 12px;border:1px solid #ccc;border-radius:6px;">
+    <label for="presPais">País:</label><input id="presPais" type="text" style="width:100%;padding:10px;margin:8px 0 12px;border:1px solid #ccc;border-radius:6px;">
+    <label for="presRelacaoUfrrj">Relação com a UFRRJ?</label><input id="presRelacaoUfrrj" type="text" style="width:100%;padding:10px;margin:8px 0 12px;border:1px solid #ccc;border-radius:6px;">
+    <label for="presGenero">Gênero:</label><input id="presGenero" type="text" style="width:100%;padding:10px;margin:8px 0 12px;border:1px solid #ccc;border-radius:6px;">
+    <label for="presEtnico">Identificação Étnico-racial:</label><input id="presEtnico" type="text" style="width:100%;padding:10px;margin:8px 0 12px;border:1px solid #ccc;border-radius:6px;">
+    <label for="presOrientacao">Orientação afetiva/sexual:</label><input id="presOrientacao" type="text" style="width:100%;padding:10px;margin:8px 0 12px;border:1px solid #ccc;border-radius:6px;">
+    <label for="presComoSoube">Como soube do Plantão:</label><input id="presComoSoube" type="text" style="width:100%;padding:10px;margin:8px 0 12px;border:1px solid #ccc;border-radius:6px;">
+    <label for="presOutras">Outras informações:</label><textarea id="presOutras" rows="3" style="width:100%;padding:10px;margin:8px 0 16px;border:1px solid #ccc;border-radius:6px;"></textarea>
+    <label for="localPresencial">Local de atendimento</label><input id="localPresencial" type="text" required style="width:100%;padding:10px;margin:8px 0 16px;border:1px solid #ccc;border-radius:6px;">
+    <label for="arquivoPresencial">Relatório de atendimento (PDF, DOC ou DOCX)</label><input type="file" id="arquivoPresencial" accept=".pdf,.doc,.docx" required style="width:100%;padding:8px;margin:8px 0 16px;">
+    <div id="mensagemPresencial"></div><button class="btn" id="btnSalvarPresencial" onclick="salvarPresencial()">Cadastrar</button><span class="voltar" onclick="mostrarRetornarCliente()">← Voltar</span></div></div>
+  <script>
+
+    // ============================================================
+    // COMPATIBILIDADE: APPS SCRIPT + GITHUB PAGES
+    // ============================================================
+    // No Apps Script, google.script.run continua funcionando normalmente.
+    // No GitHub Pages, informe abaixo a URL /exec da implantação Web App.
+    const APPS_SCRIPT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwAKhHQ4Wxludm9qFYmocz78-pX9rmFHns4WlEQ0Aa32bcaQKdA55EZHzIgpfH7ZJ1sfQ/exec';
+
+    const executandoDentroDoAppsScript =
+      typeof google !== 'undefined' &&
+      google.script &&
+      google.script.run;
+
+    let tokenSessaoApi = sessionStorage.getItem('plantaoApiToken') || '';
+
+    if (!executandoDentroDoAppsScript) {
+      window.google = window.google || {};
+      window.google.script = window.google.script || {};
+
+      function criarExecutorRemoto() {
+        let sucesso = function() {};
+        let falha = function(erro) { console.error(erro); };
+
+        const executor = new Proxy({}, {
+          get: function(alvo, propriedade) {
+            if (propriedade === 'withSuccessHandler') {
+              return function(fn) {
+                sucesso = typeof fn === 'function' ? fn : sucesso;
+                return executor;
+              };
+            }
+
+            if (propriedade === 'withFailureHandler') {
+              return function(fn) {
+                falha = typeof fn === 'function' ? fn : falha;
+                return executor;
+              };
+            }
+
+            return function(...args) {
+              if (!APPS_SCRIPT_WEB_APP_URL ||
+                  APPS_SCRIPT_WEB_APP_URL.indexOf('COLE_AQUI') !== -1) {
+                falha(new Error('Configure APPS_SCRIPT_WEB_APP_URL no index.html com a URL /exec do Apps Script.'));
+                return;
+              }
+
+              fetch(APPS_SCRIPT_WEB_APP_URL, {
+                method: 'POST',
+                redirect: 'follow',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({
+                  acao: String(propriedade),
+                  argumentos: args
+                })
+              })
+              .then(function(resposta) {
+                if (!resposta.ok) throw new Error('HTTP ' + resposta.status);
+                return resposta.json();
+              })
+              .then(function(pacote) {
+                if (!pacote || pacote.ok !== true) {
+                  throw new Error((pacote && pacote.erro) || 'Resposta inválida do servidor.');
+                }
+
+                if (pacote.token) {
+                  tokenSessaoApi = pacote.token;
+                  sessionStorage.setItem('plantaoApiToken', tokenSessaoApi);
+                }
+
+                sucesso(pacote.resultado);
+              })
+              .catch(function(erro) {
+                falha(erro);
+              });
+            };
+          }
+        });
+
+        return executor;
+      }
+
+      Object.defineProperty(window.google.script, 'run', {
+        configurable: false,
+        enumerable: true,
+        get: function() {
+          return criarExecutorRemoto();
+        }
+      });
+    }
+
+    // ----------------------------------------
+    // USUÁRIO LOGADO (guardado em memória)
+    // ----------------------------------------
+    let usuarioAtual = null;
+
+    function rotuloTipoJanela(tipo) {
+      const mapa = {
+        supervisao_plantonistas: 'Supervisão Plantonistas',
+        supervisao_treinandos: 'Supervisão Treinandos',
+        treinamento_teorico: 'Treinamento teórico'
+      };
+      return mapa[tipo] || tipo;
+    }
+
+    // ----------------------------------------
+    // NAVEGAÇÃO ENTRE TELAS
+    // ----------------------------------------
+
+    function mostrarLogin() {
+      document.getElementById('inicio').style.display = 'none';
+      document.getElementById('login').style.display = 'flex';
+      document.getElementById('mensagemLogin').textContent = '';
+      document.getElementById('mensagemLogin').className = '';
+      window.scrollTo(0, 0);
+    }
+
+    function mostrarInicio() {
+      document.getElementById('login').style.display = 'none';
+      document.getElementById('inicio').style.display = 'block';
+      window.scrollTo(0, 0);
+    }
+
+    function mostrarPainel(nome, email, perfil, habilitado = true, ativo = true) {
+      usuarioAtual = { nome: nome, email: email, perfil: perfil, habilitado: habilitado !== false, ativo: ativo !== false };
+      esconderTelasExtras();
+      document.getElementById('painel').style.setProperty('display', 'block', 'important');
+      document.getElementById('painelSaudacao').textContent = 'Olá, ' + nome;
+      document.getElementById('painelPerfil').textContent = 'Perfil: ' + perfil;
+      document.getElementById('mensagemPainel').textContent = '';
+      document.getElementById('mensagemPainel').className = '';
+
+      const ehBolsista = perfil && perfil.toString().trim().toLowerCase() === 'bolsista';
+      ['btnJardimAdmin','btnDadosPlantao','btnParticipantes'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=ehBolsista?'block':'none';});
+      const inabilitado = !ehBolsista && usuarioAtual.habilitado === false;
+      const permitidosInabilitado = ['btnSupervisoes','btnMaterialEstudo'];
+      const todosBotoes = ['btnSolicitarCliente','btnRetornarCliente','btnSupervisoes','btnMeusPlantoes','btnEnviarFotos','btnMaterialEstudo','btnSolicitarPsicologo'];
+      todosBotoes.forEach(id=>{
+        const el=document.getElementById(id);
+        if(el) el.style.display=(!inabilitado || permitidosInabilitado.includes(id))?'':'none';
+      });
+
+      // Conta inativa: só "Meus Plantões" fica disponível, mesmo sobrepondo
+      // as regras acima (exceto o Jardim do Administrador do bolsista).
+      const inativo = !ehBolsista && usuarioAtual.ativo === false;
+      if (inativo) {
+        todosBotoes.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.style.display = (id === 'btnMeusPlantoes') ? '' : 'none';
+        });
+        const aviso = document.getElementById('mensagemPainel');
+        aviso.textContent = 'Sua conta está inativa. Apenas "Meus Plantões" está disponível no momento.';
+        aviso.className = 'erro';
+      }
+    }
+
+    // ----------------------------------------
+    // BOTÕES DO PAINEL (ainda placeholders, exceto Solicitar Cliente)
+    // ----------------------------------------
+
+    function acaoPainel(nomeAcao) { if (nomeAcao === 'retornarCliente') mostrarRetornarCliente(); }
+
+    function solicitarCliente() {
+      if (!usuarioAtual) return;
+
+      const mensagem = document.getElementById('mensagemPainel');
+      const botao = document.getElementById('btnSolicitarCliente');
+
+      mensagem.textContent = '';
+      mensagem.className = '';
+      botao.disabled = true;
+      botao.textContent = 'Solicitando...';
+
+      google.script.run
+        .withSuccessHandler(function(resposta) {
+          botao.disabled = false;
+          botao.textContent = '📋 Solicitar Cliente';
+          mensagem.textContent = resposta.mensagem;
+          mensagem.className = resposta.sucesso ? 'sucesso' : 'erro';
+        })
+        .withFailureHandler(function(erro) {
+          botao.disabled = false;
+          botao.textContent = '📋 Solicitar Cliente';
+          mensagem.textContent = 'Erro ao conectar. Tente novamente.';
+          mensagem.className = 'erro';
+          console.error(erro);
+        })
+        .solicitarCliente(usuarioAtual.email, usuarioAtual.nome, usuarioAtual.perfil);
+    }
+
+    let clienteSelecionado = null;
+
+    let participantesCache=[];
+    function mostrarDadosPlantao(){if(!usuarioAtual||usuarioAtual.perfil.toLowerCase()!=='bolsista')return;esconderTelasExtras();document.getElementById('dadosPlantao').style.display='flex';document.getElementById('dadosPlantaoConteudo').textContent='Carregando...';google.script.run.withSuccessHandler(r=>{const el=document.getElementById('dadosPlantaoConteudo');if(!r.sucesso){el.textContent=r.mensagem;return;}const bloco=(titulo,o)=>`<div style="background:#f5f7f6;padding:14px;border-radius:8px;margin:14px 0;"><h3>${titulo}</h3><p>Atendidos: ${o.atendidos}</p><p>Desistentes: ${o.desistentes}</p><p>Transferidos: ${o.transferidos}</p><p>Pendentes: ${o.pendentes}</p></div>`;el.innerHTML=bloco('Dados semanais — últimos 7 dias corridos',r.semanal)+bloco('Dados do período — '+r.periodoInicio+' a '+r.periodoFim,r.periodo)+bloco('Dados totais do projeto',r.total);}).withFailureHandler(e=>document.getElementById('dadosPlantaoConteudo').textContent='Erro ao carregar.').obterDadosPlantao(usuarioAtual.email);window.scrollTo(0,0);}
+    function mostrarParticipantes(){if(!usuarioAtual||usuarioAtual.perfil.toLowerCase()!=='bolsista')return;esconderTelasExtras();document.getElementById('participantes').style.display='flex';document.getElementById('listaParticipantes').textContent='Carregando...';google.script.run.withSuccessHandler(r=>{if(!r.sucesso){document.getElementById('listaParticipantes').textContent=r.mensagem;return;}participantesCache=r.participantes;renderParticipantes();}).withFailureHandler(()=>document.getElementById('listaParticipantes').textContent='Erro ao carregar.').obterParticipantesAtivos(usuarioAtual.email);window.scrollTo(0,0);}
+    function renderParticipantes(){const el=document.getElementById('listaParticipantes');el.innerHTML='';participantesCache.forEach((p,i)=>{const card=document.createElement('div');card.style.cssText='border:1px solid #d7ded9;border-radius:8px;padding:14px;margin:12px 0;text-align:left;';card.innerHTML=`<h3>${escapeHtml(p.nome||'Sem nome')} — ${escapeHtml(p.perfil)}</h3><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin:10px 0;"><label>Nome<input data-k="nome" value="${escapeAttr(p.nome)}"></label><label>E-mail<input data-k="email" value="${escapeAttr(p.email)}"></label><label>Telefone<input data-k="telefone" value="${escapeAttr(p.telefone)}" placeholder="Adicionar posteriormente"></label><label>Perfil<select data-k="perfil"><option ${p.perfil.toLowerCase()==='plantonista'?'selected':''}>Plantonista</option><option ${p.perfil.toLowerCase()==='treinando'?'selected':''}>Treinando</option><option ${p.perfil.toLowerCase()==='bolsista'?'selected':''}>Bolsista</option></select></label><label>Habilitação para atendimento<select data-k="habilitado"><option value="true" ${p.habilitado!==false?'selected':''}>Habilitado</option><option value="false" ${p.habilitado===false?'selected':''}>Inabilitado</option></select></label><label>Ativo<select data-k="ativo"><option value="true" ${p.ativo?'selected':''}>Ativo</option><option value="false" ${!p.ativo?'selected':''}>Inativo</option></select></label></div><p>Supervisões: ${p.presencas} | Casos narrados: ${p.narracoes}</p><p>Atendidos: ${p.atendidos} | Desistentes: ${p.desistentes} | Transferidos: ${p.transferidos} | Pendentes: ${p.pendentes}</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;"><button class="btn" data-save="${i}">Salvar alterações</button><button class="btn" data-mail="${i}">Enviar e-mail</button></div>`;card.querySelector('[data-save]').onclick=()=>{const d={};card.querySelectorAll('[data-k]').forEach(n=>d[n.dataset.k]=n.value);d.ativo=d.ativo==='true';d.habilitado=d.habilitado==='true';google.script.run.withSuccessHandler(r=>{alert(r.mensagem);if(r.sucesso)mostrarParticipantes();}).atualizarParticipante(usuarioAtual.email,p.linha,d);};card.querySelector('[data-mail]').onclick=()=>window.open('https://mail.google.com/mail/?view=cm&to='+encodeURIComponent(card.querySelector('[data-k="email"]').value),'_blank');el.appendChild(card);});}
+    function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}function escapeAttr(s){return escapeHtml(s);}
+    function baixarParticipantes(tipo){const lista=participantesCache.filter(p=>p.ativo&&(tipo==='Todos'||p.perfil.toLowerCase()===tipo.toLowerCase()));const linhas=[['Nome','E-mail','Telefone','Perfil','Ativo','Supervisões','Casos narrados','Atendidos','Desistentes','Transferidos','Pendentes'],...lista.map(p=>[p.nome,p.email,p.telefone,p.perfil,'Sim',p.presencas,p.narracoes,p.atendidos,p.desistentes,p.transferidos,p.pendentes])];const csv='\ufeff'+linhas.map(l=>l.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));a.download='participantes-'+tipo.toLowerCase()+'.csv';a.click();URL.revokeObjectURL(a.href);}
+
+    function esconderTelasExtras() {
+      ['inicio', 'login', 'painel', 'meusPlantoes', 'jardimAdmin', 'registrarFrequencia', 'registrarFalta', 'retornarCliente', 'presencial', 'dadosPlantao', 'participantes', 'enviarFotos', 'verificarPraticantes', 'painelJustificativas', 'novaJanelaAdmin', 'frequenciasAdmin', 'minhasSupervisoes', 'conferirPresenca'].forEach(function(id) {
+        const el = document.getElementById(id);
+        if (el) el.style.setProperty('display', 'none', 'important');
+      });
+    }
+
+
+    function selecionarCliente(cliente) {
+      clienteSelecionado = cliente;
+      const escolhido = document.getElementById('clienteEscolhido');
+      const form = document.getElementById('formRetorno');
+      if (escolhido) escolhido.textContent = (cliente.codigo || '') + ' — ' + (cliente.nome || '');
+      if (form) form.style.setProperty('display', 'block', 'important');
+      document.getElementById('situacaoCliente').value = '';
+      document.getElementById('detalheRetorno').value = '';
+      document.getElementById('arquivoRelatorio').value = '';
+      alterarCamposRetorno();
+    }
+
+    function alterarCamposRetorno() {
+      const situacao = document.getElementById('situacaoCliente').value;
+      document.getElementById('campoRelatorio').style.display = situacao === 'Atendido' ? 'block' : 'none';
+      document.getElementById('campoDetalhe').style.display = ['Desistente', 'Transferido'].includes(situacao) ? 'block' : 'none';
+      document.getElementById('labelDetalhe').textContent = situacao === 'Desistente'
+        ? 'Motivo da desistência'
+        : 'Nome do plantonista que receberá o cliente';
+    }
+
+    function cancelarRetorno() {
+      const form = document.getElementById('formRetorno');
+      if (form) form.style.setProperty('display', 'none', 'important');
+      clienteSelecionado = null;
+      mostrarRetornarCliente();
+    }
+
+    function salvarRetornoCliente() {
+      if (!usuarioAtual || !clienteSelecionado) return;
+
+      const situacao = document.getElementById('situacaoCliente').value;
+      if (!situacao) {
+        alert('Selecione a situação.');
+        return;
+      }
+
+      const detalhe = document.getElementById('detalheRetorno').value.trim();
+      if (situacao !== 'Atendido' && !detalhe) {
+        alert('Preencha o campo solicitado.');
+        return;
+      }
+
+      const enviar = function(arquivo) {
+        const botao = document.getElementById('btnSalvarRetorno');
+        botao.disabled = true;
+        botao.textContent = 'Salvando...';
+
+        google.script.run
+          .withSuccessHandler(function(resposta) {
+            botao.disabled = false;
+            botao.textContent = 'Confirmar';
+            alert(resposta.mensagem);
+            if (resposta.sucesso) mostrarRetornarCliente();
+          })
+          .withFailureHandler(function(erro) {
+            botao.disabled = false;
+            botao.textContent = 'Confirmar';
+            alert('Erro ao salvar. Tente novamente.');
+            console.error(erro);
+          })
+          .atualizarSituacaoCliente(
+            usuarioAtual.email,
+            usuarioAtual.nome,
+            usuarioAtual.perfil,
+            clienteSelecionado.codigo,
+            situacao,
+            detalhe,
+            arquivo
+          );
+      };
+
+      if (situacao === 'Atendido') {
+        const arquivo = document.getElementById('arquivoRelatorio').files[0];
+        if (!arquivo) {
+          alert('Anexe o relatório.');
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          enviar({ nome: arquivo.name, mimeType: arquivo.type, base64: e.target.result });
+        };
+        reader.readAsDataURL(arquivo);
+      } else {
+        enviar(null);
+      }
+    }
+
+    function mostrarPresencial() {
+      if (!usuarioAtual) return;
+      esconderTelasExtras();
+      const tela = document.getElementById('presencial');
+      if (tela) tela.style.setProperty('display', 'flex', 'important');
+      const mensagem = document.getElementById('mensagemPresencial');
+      if (mensagem) {
+        mensagem.textContent = '';
+        mensagem.className = '';
+      }
+      window.scrollTo(0, 0);
+    }
+
+    function salvarPresencial() {
+      if (!usuarioAtual) return;
+
+      const local = document.getElementById('localPresencial').value.trim();
+      const arquivo = document.getElementById('arquivoPresencial').files[0];
+      if (!local) {
+        alert('Informe o local de atendimento.');
+        return;
+      }
+      if (!arquivo) {
+        alert('Anexe o relatório do plantão presencial.');
+        return;
+      }
+
+      const informacoes = {
+        nome: document.getElementById('presNome').value.trim(),
+        curso: document.getElementById('presCurso').value.trim(),
+        idade: document.getElementById('presIdade').value.trim(),
+        cidade: document.getElementById('presCidade').value.trim(),
+        genero: document.getElementById('presGenero').value.trim(),
+        etnico: document.getElementById('presEtnico').value.trim(),
+        orientacao: document.getElementById('presOrientacao').value.trim(),
+        comoSoube: document.getElementById('presComoSoube').value.trim(),
+        outras: document.getElementById('presOutras').value.trim()
+      };
+
+      const botao = document.getElementById('btnSalvarPresencial');
+      const mensagem = document.getElementById('mensagemPresencial');
+      botao.disabled = true;
+      botao.textContent = 'Enviando...';
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        google.script.run
+          .withSuccessHandler(function(resposta) {
+            botao.disabled = false;
+            botao.textContent = 'Cadastrar';
+            mensagem.textContent = resposta.mensagem;
+            mensagem.className = resposta.sucesso ? 'sucesso' : 'erro';
+            if (resposta.sucesso) {
+              ['presNome','presCurso','presIdade','presCidade','presGenero','presEtnico','presOrientacao','presComoSoube','presOutras','localPresencial'].forEach(function(id) {
+                document.getElementById(id).value = '';
+              });
+              document.getElementById('arquivoPresencial').value = '';
+            }
+          })
+          .withFailureHandler(function(erro) {
+            botao.disabled = false;
+            botao.textContent = 'Cadastrar';
+            mensagem.textContent = 'Erro ao cadastrar.';
+            mensagem.className = 'erro';
+            console.error(erro);
+          })
+          .cadastrarPlantaoPresencial(
+            usuarioAtual.email,
+            usuarioAtual.nome,
+            usuarioAtual.perfil,
+            informacoes,
+            local,
+            { nome: arquivo.name, mimeType: arquivo.type, base64: e.target.result }
+          );
+      };
+      reader.readAsDataURL(arquivo);
+    }
+
+    function enviarFotosConfirmar() {
+      if (!usuarioAtual) return;
+
+      const input = document.getElementById('arquivosFotos');
+      const arquivos = Array.from(input.files || []);
+      const mensagem = document.getElementById('mensagemFotos');
+      const botao = document.getElementById('btnEnviarFotosConfirmar');
+
+      mensagem.textContent = '';
+      mensagem.className = '';
+
+      if (arquivos.length === 0) {
+        mensagem.textContent = 'Selecione ao menos uma foto.';
+        mensagem.className = 'erro';
+        return;
+      }
+
+      botao.disabled = true;
+      botao.textContent = 'Enviando...';
+
+      // Lê todos os arquivos como base64 antes de mandar pro servidor
+      const leituras = arquivos.map(f => new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = e => resolve({ nome: f.name, mimeType: f.type, base64: e.target.result });
+        reader.readAsDataURL(f);
+      }));
+
+      Promise.all(leituras).then(function(listaArquivos) {
+        google.script.run
+          .withSuccessHandler(function(resposta) {
+            botao.disabled = false;
+            botao.textContent = 'Enviar';
+            mensagem.textContent = resposta.mensagem;
+            mensagem.className = resposta.sucesso ? 'sucesso' : 'erro';
+            if (resposta.sucesso) input.value = '';
+          })
+          .withFailureHandler(function(erro) {
+            botao.disabled = false;
+            botao.textContent = 'Enviar';
+            mensagem.textContent = 'Erro ao conectar. Tente novamente.';
+            mensagem.className = 'erro';
+            console.error(erro);
+          })
+          .enviarFotosPlantonista(usuarioAtual.email, usuarioAtual.nome, usuarioAtual.perfil, listaArquivos);
+      });
+    }
+
+    function sair() {
+      if (!executandoDentroDoAppsScript) { tokenSessaoApi=''; sessionStorage.removeItem('plantaoApiToken'); }
+      usuarioAtual = null;
+      document.getElementById('painel').style.display = 'none';
+      document.getElementById('inicio').style.display = 'block';
+      document.getElementById('email').value = '';
+      document.getElementById('senha').value = '';
+      window.scrollTo(0, 0);
+    }
+
+    // ----------------------------------------
+    // MEUS PLANTÕES
+    // ----------------------------------------
+
+    function mostrarMeusPlantoes() {
+      esconderTelasExtras();
+      document.getElementById('painel').style.display = 'none';
+      document.getElementById('meusPlantoes').style.display = 'flex';
+      document.getElementById('mensagemMeusPlantoes').textContent = '';
+      document.getElementById('mensagemMeusPlantoes').className = '';
+      carregarResumoPlantao();
+      window.scrollTo(0, 0);
+    }
+
+    function voltarAoPainel() {
+      esconderTelasExtras();
+      const painel = document.getElementById('painel');
+      if (painel) painel.style.setProperty('display', 'block', 'important');
+      window.scrollTo(0, 0);
+    }
+
+    function voltarAoJardimAdmin() {
+      if (!usuarioAtual || String(usuarioAtual.perfil).trim().toLowerCase() !== 'bolsista') return;
+      esconderTelasExtras();
+      document.getElementById('jardimAdmin').style.setProperty('display', 'flex', 'important');
+      window.scrollTo(0, 0);
+    }
+
+    function mostrarVerificarPraticantes() {
+      if (!usuarioAtual || String(usuarioAtual.perfil).trim().toLowerCase() !== 'bolsista') return;
+      esconderTelasExtras();
+      document.getElementById('verificarPraticantes').style.setProperty('display', 'flex', 'important');
+      document.getElementById('mensagemPraticantes').textContent = '';
+      document.getElementById('mensagemPraticantes').className = '';
+      window.scrollTo(0, 0);
+    }
+
+    function baixarRelatorioPraticantes(filtro) {
+      const mesInicio = document.getElementById('praticantesMesInicio').value;
+      const mesFim = document.getElementById('praticantesMesFim').value;
+      const mensagem = document.getElementById('mensagemPraticantes');
+
+      mensagem.textContent = '';
+      mensagem.className = '';
+
+      if (!mesInicio || !mesFim) {
+        mensagem.textContent = 'Selecione o período (mês inicial e final).';
+        mensagem.className = 'erro';
+        return;
+      }
+
+      mensagem.textContent = 'Gerando relatório...';
+      mensagem.className = '';
+
+      google.script.run
+        .withSuccessHandler(function(resposta) {
+          if (resposta.sucesso) {
+            mensagem.textContent = resposta.mensagem + ' Abrindo em outra aba...';
+            mensagem.className = 'sucesso';
+            window.open(resposta.url, '_blank');
+          } else {
+            mensagem.textContent = resposta.mensagem;
+            mensagem.className = 'erro';
+          }
+        })
+        .withFailureHandler(function(erro) {
+          mensagem.textContent = 'Erro ao conectar. Tente novamente.';
+          mensagem.className = 'erro';
+          console.error(erro);
+        })
+        .gerarRelatorioPraticantes(usuarioAtual.perfil, filtro, mesInicio, mesFim);
+    }
+
+    // ----------------------------------------
+    // JARDIM DO ADMINISTRADOR (painel do bolsista)
+    // ----------------------------------------
+
+    function mostrarJardimAdmin() {
+      if (!usuarioAtual || String(usuarioAtual.perfil).trim().toLowerCase() !== 'bolsista') return;
+      esconderTelasExtras();
+      document.getElementById('jardimAdmin').style.setProperty('display', 'flex', 'important');
+      carregarStatusManutencao();
+      window.scrollTo(0, 0);
+    }
+
+
+    // ----------------------------------------
+    // JUSTIFICATIVAS PENDENTES (bolsista/admin)
+    // ----------------------------------------
+
+    function mostrarJustificativasAdmin() {
+      if (!usuarioAtual || String(usuarioAtual.perfil).trim().toLowerCase() !== 'bolsista') return;
+      esconderTelasExtras();
+      document.getElementById('painelJustificativas').style.setProperty('display', 'block', 'important');
+      document.getElementById('listaJustificativasAdmin').textContent = 'Carregando...';
+      carregarJustificativasAdmin();
+      window.scrollTo(0, 0);
+    }
+
+    function fecharJustificativasAdmin() {
+      mostrarFrequenciasAdmin();
+    }
+
+    function carregarJustificativasAdmin() {
+      if (!usuarioAtual || String(usuarioAtual.perfil).trim().toLowerCase() !== 'bolsista') return;
+      const lista = document.getElementById('listaJustificativasAdmin');
+      const mensagem = document.getElementById('mensagemJustificativasAdmin');
+      lista.textContent = 'Carregando...';
+      mensagem.textContent = '';
+      mensagem.className = '';
+
+      google.script.run
+        .withSuccessHandler(function(resposta) {
+          if (!resposta || !resposta.sucesso) {
+            lista.textContent = (resposta && resposta.mensagem) || 'Não foi possível carregar as justificativas.';
+            return;
+          }
+          const itens = resposta.justificativas || [];
+          lista.innerHTML = '';
+          if (!itens.length) {
+            lista.textContent = 'Não há justificativas pendentes.';
+            return;
+          }
+
+          itens.forEach(function(j) {
+            const card = document.createElement('div');
+            card.className = 'janela-item';
+            card.style.cssText = 'display:block; margin-bottom:12px; padding:14px;';
+
+            const titulo = document.createElement('strong');
+            titulo.textContent = j.nome + ' · ' + j.data;
+            card.appendChild(titulo);
+
+            const email = document.createElement('p');
+            email.textContent = j.email;
+            email.style.margin = '6px 0';
+            card.appendChild(email);
+
+            const motivo = document.createElement('p');
+            motivo.textContent = j.motivo;
+            motivo.style.cssText = 'white-space:pre-wrap; margin:8px 0 12px;';
+            card.appendChild(motivo);
+
+            if (j.enviadoEm) {
+              const dataEnvio = document.createElement('small');
+              dataEnvio.textContent = 'Enviada em: ' + j.enviadoEm;
+              card.appendChild(dataEnvio);
+            }
+
+            const acoes = document.createElement('div');
+            acoes.style.cssText = 'display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;';
+
+            [['Aprovar', 'Aprovada'], ['Recusar', 'Recusada']].forEach(function(opcao) {
+              const botao = document.createElement('button');
+              botao.textContent = opcao[0];
+              botao.className = 'btn';
+              if (opcao[1] === 'Recusada') {
+                botao.style.background = '#a94442';
+              }
+              botao.onclick = function() {
+                analisarJustificativaAdmin(j.id, opcao[1], botao, card);
+              };
+              acoes.appendChild(botao);
+            });
+            card.appendChild(acoes);
+            lista.appendChild(card);
+          });
+        })
+        .withFailureHandler(function(erro) {
+          lista.textContent = 'Erro ao carregar as justificativas.';
+          console.error(erro);
+        })
+        .listarJustificativasPendentes(usuarioAtual.email);
+    }
+
+    function analisarJustificativaAdmin(id, decisao, botao, card) {
+      if (!usuarioAtual || String(usuarioAtual.perfil).trim().toLowerCase() !== 'bolsista') return;
+      const botoes = card.querySelectorAll('button');
+      botoes.forEach(b => b.disabled = true);
+      botao.textContent = decisao === 'Aprovada' ? 'Aprovando...' : 'Recusando...';
+
+      google.script.run
+        .withSuccessHandler(function(resposta) {
+          if (resposta && resposta.sucesso) {
+            card.remove();
+            const lista = document.getElementById('listaJustificativasAdmin');
+            if (!lista.querySelector('.janela-item')) lista.textContent = 'Não há justificativas pendentes.';
+            const mensagem = document.getElementById('mensagemJustificativasAdmin');
+            mensagem.textContent = resposta.mensagem;
+            mensagem.className = 'sucesso';
+          } else {
+            botoes.forEach(b => b.disabled = false);
+            botao.textContent = decisao === 'Aprovada' ? 'Aprovar' : 'Recusar';
+            const mensagem = document.getElementById('mensagemJustificativasAdmin');
+            mensagem.textContent = (resposta && resposta.mensagem) || 'Não foi possível registrar a decisão.';
+            mensagem.className = 'erro';
+          }
+        })
+        .withFailureHandler(function(erro) {
+          botoes.forEach(b => b.disabled = false);
+          botao.textContent = decisao === 'Aprovada' ? 'Aprovar' : 'Recusar';
+          const mensagem = document.getElementById('mensagemJustificativasAdmin');
+          mensagem.textContent = 'Erro ao registrar a decisão.';
+          mensagem.className = 'erro';
+          console.error(erro);
+        })
+        .decidirJustificativaFalta(usuarioAtual.email, id, decisao);
+    }
+
+    // ----------------------------------------
+    // MANUTENÇÃO ON/OFF
+    // ----------------------------------------
+
+    function carregarStatusManutencao() {
+      const botao = document.getElementById('btnManutencao');
+      google.script.run
+        .withSuccessHandler(function(resposta) {
+          if (!resposta.sucesso) { botao.textContent = '🔧 Manutenção: erro ao carregar'; return; }
+          atualizarBotaoManutencao(resposta.ligada);
+        })
+        .withFailureHandler(function() { botao.textContent = '🔧 Manutenção: erro ao carregar'; })
+        .obterStatusManutencao();
+    }
+
+    function atualizarBotaoManutencao(ligada) {
+      const botao = document.getElementById('btnManutencao');
+      botao.textContent = ligada ? '🔧 Manutenção: LIGADA (clique para desligar)' : '🔧 Manutenção: desligada (clique para ligar)';
+      botao.style.background = ligada ? '#c0392b' : '';
+    }
+
+    function alternarManutencao() {
+      const botao = document.getElementById('btnManutencao');
+      const ligadaAtualmente = botao.textContent.indexOf('LIGADA') !== -1;
+      const novoValor = !ligadaAtualmente;
+
+      botao.disabled = true;
+
+      google.script.run
+        .withSuccessHandler(function(resposta) {
+          botao.disabled = false;
+          if (resposta.sucesso) {
+            atualizarBotaoManutencao(novoValor);
+          } else {
+            alert(resposta.mensagem);
+          }
+        })
+        .withFailureHandler(function() {
+          botao.disabled = false;
+          alert('Erro ao alterar o status de manutenção.');
+        })
+        .definirManutencao(usuarioAtual.perfil, novoValor);
+    }
+
+    function mostrarFrequenciasAdmin() {
+      if (!usuarioAtual || String(usuarioAtual.perfil).trim().toLowerCase() !== 'bolsista') return;
+      esconderTelasExtras();
+      const tela = document.getElementById('frequenciasAdmin');
+      if (tela) tela.style.setProperty('display', 'flex', 'important');
+      window.scrollTo(0, 0);
+    }
+
+    function mostrarNovaJanelaAdmin() {
+      if (!usuarioAtual || String(usuarioAtual.perfil).trim().toLowerCase() !== 'bolsista') return;
+      esconderTelasExtras();
+      document.getElementById('novaJanelaAdmin').style.setProperty('display', 'flex', 'important');
+      document.getElementById('mensagemAdmin').textContent = '';
+      document.getElementById('mensagemAdmin').className = '';
+      carregarJanelas();
+      window.scrollTo(0, 0);
+    }
+
+    function fecharNovaJanelaAdmin() {
+      mostrarFrequenciasAdmin();
+    }
+
+    function abrirJanela() {
+      const data = document.getElementById('janelaData').value;
+      const inicio = document.getElementById('janelaInicio').value;
+      const fim = document.getElementById('janelaFim').value;
+      const tipo = document.getElementById('janelaTipo').value;
+      const mensagem = document.getElementById('mensagemAdmin');
+      const botao = document.getElementById('btnAbrirJanela');
+
+      mensagem.textContent = '';
+      mensagem.className = '';
+
+      if (!data || !inicio || !fim) {
+        mensagem.textContent = 'Preencha data, hora de início e hora de fim.';
+        mensagem.className = 'erro';
+        return;
+      }
+
+      botao.disabled = true;
+      botao.textContent = 'Abrindo...';
+
+      google.script.run
+        .withSuccessHandler(function(resposta) {
+          botao.disabled = false;
+          botao.textContent = 'Abrir Janela';
+          mensagem.textContent = resposta.mensagem;
+          mensagem.className = resposta.sucesso ? 'sucesso' : 'erro';
+          if (resposta.sucesso) carregarJanelas();
+        })
+        .withFailureHandler(function(erro) {
+          botao.disabled = false;
+          botao.textContent = 'Abrir Janela';
+          mensagem.textContent = 'Erro ao conectar. Tente novamente.';
+          mensagem.className = 'erro';
+          console.error(erro);
+        })
+        .abrirJanelaFrequencia(usuarioAtual.perfil, data, inicio, fim, tipo);
+    }
+
+    function carregarJanelas() {
+      const lista = document.getElementById('listaJanelas');
+      lista.textContent = 'Carregando...';
+
+      google.script.run
+        .withSuccessHandler(function(resposta) {
+          if (!resposta.sucesso) {
+            lista.textContent = resposta.mensagem;
+            return;
+          }
+          if (resposta.janelas.length === 0) {
+            lista.textContent = 'Nenhuma janela cadastrada ainda.';
+            return;
+          }
+
+          lista.innerHTML = '';
+          resposta.janelas.forEach(function(j) {
+            const item = document.createElement('div');
+            item.className = 'janela-item';
+
+            const info = document.createElement('span');
+            const statusClasse = j.status === 'Aberta' ? 'status-aberta' : 'status-fechada';
+            info.innerHTML = j.data + ' · ' + j.horaInicio + '–' + j.horaFim + ' · ' +
+              rotuloTipoJanela(j.tipo) +
+              ' · <span class="' + statusClasse + '">' + j.status + '</span>';
+
+            item.appendChild(info);
+
+            if (j.status === 'Aberta') {
+              const btnFechar = document.createElement('button');
+              btnFechar.textContent = 'Fechar';
+              btnFechar.onclick = function() { fecharJanela(j.id); };
+              item.appendChild(btnFechar);
+            }
+
+            lista.appendChild(item);
+          });
+        })
+        .withFailureHandler(function(erro) {
+          lista.textContent = 'Erro ao carregar as janelas.';
+          console.error(erro);
+        })
+        .listarJanelasFrequencia(usuarioAtual.perfil);
+    }
+
+    function fecharJanela(id) {
+      google.script.run
+        .withSuccessHandler(function(resposta) {
+          carregarJanelas();
+        })
+        .withFailureHandler(function(erro) {
+          console.error(erro);
+        })
+        .fecharJanelaFrequencia(usuarioAtual.perfil, id);
+    }
+
+    function mostrarMinhasSupervisoes() {
+      if (!usuarioAtual) return;
+      esconderTelasExtras();
+      document.getElementById('minhasSupervisoes').style.setProperty('display','flex','important');
+      window.scrollTo(0, 0);
+    }
+
+    function mostrarConferirPresenca() {
+      if (!usuarioAtual) return;
+      esconderTelasExtras();
+      document.getElementById('conferirPresenca').style.setProperty('display','flex','important');
+      const lista = document.getElementById('listaConferirPresenca');
+      const mensagem = document.getElementById('mensagemConferirPresenca');
+      lista.textContent = 'Carregando...';
+      mensagem.textContent = '';
+
+      google.script.run
+        .withSuccessHandler(function(resposta) {
+          if (!resposta || !resposta.sucesso) {
+            lista.textContent = resposta && resposta.mensagem ? resposta.mensagem : 'Não foi possível carregar o histórico.';
+            return;
+          }
+          if (!resposta.encontros || resposta.encontros.length === 0) {
+            lista.textContent = 'Nenhuma supervisão ou treinamento cadastrado ainda.';
+            return;
+          }
+
+          lista.innerHTML = '';
+          resposta.encontros.forEach(function(item) {
+            const card = document.createElement('div');
+            card.style.cssText = 'border:1px solid #d7ded9;border-radius:8px;padding:14px;margin:12px 0;text-align:left;background:#f5f7f6;';
+
+            let situacao = item.situacao || 'Ausente';
+            let icone = situacao === 'Presente' ? '✅' :
+                        situacao === 'Falta justificada' ? '🟡' :
+                        situacao === 'Justificativa pendente' ? '🕐' : '❌';
+
+            let conteudo =
+              '<div style="font-weight:600;margin-bottom:6px;">' +
+              escapeHtml(item.data) + ' · ' + escapeHtml(item.tipoRotulo) +
+              '</div>' +
+              '<div style="margin-bottom:5px;">' + icone + ' <strong>' + escapeHtml(situacao) + '</strong></div>' +
+              '<div style="font-size:13px;color:#4a5c52;">Horário: ' +
+              escapeHtml(item.horaInicio) + '–' + escapeHtml(item.horaFim) + '</div>';
+
+            if (item.palavraDia) {
+              conteudo += '<div style="margin-top:8px;"><strong>Palavras do dia:</strong> ' +
+                escapeHtml(item.palavraDia) + '</div>';
+            }
+            if (item.motivoJustificativa) {
+              conteudo += '<div style="margin-top:8px;"><strong>Motivo da falta:</strong> ' +
+                escapeHtml(item.motivoJustificativa) + '</div>';
+            }
+
+            card.innerHTML = conteudo;
+            lista.appendChild(card);
+          });
+        })
+        .withFailureHandler(function(erro) {
+          lista.textContent = 'Erro ao carregar o histórico de presença.';
+          console.error(erro);
+        })
+        .obterHistoricoSupervisoes(usuarioAtual.email);
+    }
+
+    // ----------------------------------------
+    // REGISTRAR FREQUÊNCIA (plantonista)
+    // ----------------------------------------
+    let janelaSelecionadaId = null;
+
+    function mostrarRegistrarFrequencia() {
+      esconderTelasExtras();
+      document.getElementById('painel').style.display = 'none';
+      document.getElementById('registrarFrequencia').style.setProperty('display','flex','important');
+      document.getElementById('mensagemFrequencia').textContent = '';
+      document.getElementById('mensagemFrequencia').className = '';
+      cancelarRegistroFrequencia(); // garante que começa na lista, não no formulário
+      carregarJanelasAbertas();
+      window.scrollTo(0, 0);
+    }
+
+    function carregarJanelasAbertas() {
+      const lista = document.getElementById('listaJanelasAbertas');
+      lista.textContent = 'Carregando...';
+
+      google.script.run
+        .withSuccessHandler(function(resposta) {
+          if (!resposta.sucesso) {
+            lista.textContent = resposta.mensagem;
+            return;
+          }
+          if (resposta.janelas.length === 0) {
+            lista.textContent = 'Nenhuma janela de frequência aberta no momento.';
+            return;
+          }
+
+          lista.innerHTML = '';
+          resposta.janelas.forEach(function(j) {
+            const item = document.createElement('div');
+            item.className = 'janela-item';
+
+            const info = document.createElement('span');
+            info.textContent = j.data + ' · ' + j.horaInicio + '–' + j.horaFim +
+              ' · ' + rotuloTipoJanela(j.tipo);
+            item.appendChild(info);
+
+            const btnRegistrar = document.createElement('button');
+            btnRegistrar.textContent = 'Registrar';
+            btnRegistrar.onclick = function() {
+              selecionarJanela(j.id, j.data, j.horaInicio, j.horaFim, j.tipo);
+            };
+            item.appendChild(btnRegistrar);
+
+            lista.appendChild(item);
+          });
+        })
+        .withFailureHandler(function(erro) {
+          lista.textContent = 'Erro ao carregar as janelas.';
+          console.error(erro);
+        })
+        .listarJanelasAbertas();
+    }
+
+    let tipoJanelaSelecionada = null;
+
+    function selecionarJanela(id, data, inicio, fim, tipo) {
+      janelaSelecionadaId = id;
+      tipoJanelaSelecionada = tipo;
+
+      document.getElementById('blocoListaJanelas').style.display = 'none';
+      document.getElementById('blocoFormRegistro').style.display = 'block';
+      document.getElementById('janelaSelecionadaInfo').textContent =
+        'Janela selecionada: ' + data + ' · ' + inicio + '–' + fim +
+        ' · ' + rotuloTipoJanela(tipo);
+
+      // Treinamento teórico não pede narração nem palavra do dia — só confirmar presença
+      const exigeCampos = (tipo === 'supervisao_plantonistas' || tipo === 'supervisao_treinandos');
+      document.getElementById('camposNarracao').style.display = exigeCampos ? 'block' : 'none';
+
+      document.getElementById('registroNarrou').value = '';
+      document.getElementById('registroPalavra').value = '';
+    }
+
+    function cancelarRegistroFrequencia() {
+      janelaSelecionadaId = null;
+      tipoJanelaSelecionada = null;
+      document.getElementById('blocoFormRegistro').style.display = 'none';
+      document.getElementById('blocoListaJanelas').style.display = 'block';
+    }
+
+    function confirmarRegistroFrequencia() {
+      if (!janelaSelecionadaId || !usuarioAtual) return;
+
+      const exigeCampos = (tipoJanelaSelecionada === 'supervisao_plantonistas' || tipoJanelaSelecionada === 'supervisao_treinandos');
+      const narrou = document.getElementById('registroNarrou').value;
+      const palavra = document.getElementById('registroPalavra').value.trim();
+      const mensagem = document.getElementById('mensagemFrequencia');
+      const botao = document.getElementById('btnConfirmarRegistro');
+
+      mensagem.textContent = '';
+      mensagem.className = '';
+
+      if (exigeCampos) {
+        if (!narrou) {
+          mensagem.textContent = 'Selecione se narrou ou não no dia.';
+          mensagem.className = 'erro';
+          return;
+        }
+        if (!palavra) {
+          mensagem.textContent = 'A palavra do dia é obrigatória para esse tipo de supervisão.';
+          mensagem.className = 'erro';
+          return;
+        }
+      }
+
+      botao.disabled = true;
+      botao.textContent = 'Enviando...';
+
+      google.script.run
+        .withSuccessHandler(function(resposta) {
+          botao.disabled = false;
+          botao.textContent = 'Confirmar Registro';
+          mensagem.textContent = resposta.mensagem;
+          mensagem.className = resposta.sucesso ? 'sucesso' : 'erro';
+          if (resposta.sucesso) cancelarRegistroFrequencia();
+        })
+        .withFailureHandler(function(erro) {
+          botao.disabled = false;
+          botao.textContent = 'Confirmar Registro';
+          mensagem.textContent = 'Erro ao conectar. Tente novamente.';
+          mensagem.className = 'erro';
+          console.error(erro);
+        })
+        .registrarFrequencia(
+          usuarioAtual.email,
+          usuarioAtual.nome,
+          usuarioAtual.perfil,
+          janelaSelecionadaId,
+          exigeCampos ? (narrou === 'sim') : null,
+          exigeCampos ? palavra : ''
+        );
+    }
+
+    // ----------------------------------------
+    // REGISTRAR MOTIVO DE FALTA (plantonista)
+    // ----------------------------------------
+    let janelaFaltaId = null;
+
+    function mostrarRegistrarFalta() {
+      esconderTelasExtras();
+      document.getElementById('painel').style.display = 'none';
+      document.getElementById('registrarFalta').style.setProperty('display','flex','important');
+      document.getElementById('mensagemFalta').textContent = '';
+      document.getElementById('mensagemFalta').className = '';
+      cancelarJustificativa();
+      carregarTodasJanelas();
+      window.scrollTo(0, 0);
+    }
+
+    function carregarTodasJanelas() {
+      const lista = document.getElementById('listaTodasJanelas');
+      lista.textContent = 'Carregando...';
+
+      google.script.run
+        .withSuccessHandler(function(resposta) {
+          if (!resposta.sucesso) {
+            lista.textContent = resposta.mensagem;
+            return;
+          }
+          if (resposta.janelas.length === 0) {
+            lista.textContent = 'Nenhum dia cadastrado ainda.';
+            return;
+          }
+
+          lista.innerHTML = '';
+          resposta.janelas.forEach(function(j) {
+            const item = document.createElement('div');
+            item.className = 'janela-item';
+
+            const info = document.createElement('span');
+            const statusClasse = j.status === 'Aberta' ? 'status-aberta' : 'status-fechada';
+            info.innerHTML = j.data + ' · ' + j.horaInicio + '–' + j.horaFim + ' · ' +
+              rotuloTipoJanela(j.tipo) +
+              ' · <span class="' + statusClasse + '">' + j.status + '</span>';
+            item.appendChild(info);
+
+            const btnJustificar = document.createElement('button');
+            btnJustificar.textContent = 'Justificar';
+            btnJustificar.onclick = function() {
+              selecionarJanelaFalta(j.id, j.data, j.horaInicio, j.horaFim, j.tipo);
+            };
+            item.appendChild(btnJustificar);
+
+            lista.appendChild(item);
+          });
+        })
+        .withFailureHandler(function(erro) {
+          lista.textContent = 'Erro ao carregar os dias.';
+          console.error(erro);
+        })
+        .listarTodasJanelas();
+    }
+
+    function selecionarJanelaFalta(id, data, inicio, fim, tipo) {
+      janelaFaltaId = id;
+
+      document.getElementById('blocoListaFalta').style.display = 'none';
+      document.getElementById('blocoFormFalta').style.display = 'block';
+      document.getElementById('janelaFaltaInfo').textContent =
+        'Dia selecionado: ' + data + ' · ' + inicio + '–' + fim +
+        ' · ' + rotuloTipoJanela(tipo);
+
+      document.getElementById('motivoFalta').value = '';
+    }
+
+    function cancelarJustificativa() {
+      janelaFaltaId = null;
+      document.getElementById('blocoFormFalta').style.display = 'none';
+      document.getElementById('blocoListaFalta').style.display = 'block';
+    }
+
+    function enviarJustificativa() {
+      if (!janelaFaltaId || !usuarioAtual) return;
+
+      const motivo = document.getElementById('motivoFalta').value.trim();
+      const mensagem = document.getElementById('mensagemFalta');
+      const botao = document.getElementById('btnEnviarJustificativa');
+
+      mensagem.textContent = '';
+      mensagem.className = '';
+
+      if (!motivo) {
+        mensagem.textContent = 'Escreva o motivo da ausência.';
+        mensagem.className = 'erro';
+        return;
+      }
+
+      botao.disabled = true;
+      botao.textContent = 'Enviando...';
+
+      google.script.run
+        .withSuccessHandler(function(resposta) {
+          botao.disabled = false;
+          botao.textContent = 'Enviar Justificativa';
+          mensagem.textContent = resposta.mensagem;
+          mensagem.className = resposta.sucesso ? 'sucesso' : 'erro';
+          if (resposta.sucesso) cancelarJustificativa();
+        })
+        .withFailureHandler(function(erro) {
+          botao.disabled = false;
+          botao.textContent = 'Enviar Justificativa';
+          mensagem.textContent = 'Erro ao conectar. Tente novamente.';
+          mensagem.className = 'erro';
+          console.error(erro);
+        })
+        .enviarJustificativaFalta(
+          usuarioAtual.email,
+          usuarioAtual.nome,
+          usuarioAtual.perfil,
+          janelaFaltaId,
+          motivo
+        );
+    }
+
+    // ----------------------------------------
+    function carregarResumoPlantao() {
+      const resumoTexto = document.getElementById('resumoTexto');
+      resumoTexto.textContent = 'Carregando...';
+
+      google.script.run
+        .withSuccessHandler(function(resposta) {
+          if (resposta.sucesso) {
+            resumoTexto.innerHTML =
+              resposta.pendentes + ' pendente(s)<br>' +
+              resposta.atendidos + ' atendido(s)<br>' +
+              resposta.desistentes + ' desistente(s)<br>' +
+              resposta.transferidos + ' transferido(s)';
+          } else {
+            resumoTexto.textContent = resposta.mensagem;
+          }
+        })
+        .withFailureHandler(function(erro) {
+          resumoTexto.textContent = 'Erro ao carregar o resumo.';
+          console.error(erro);
+        })
+        .obterResumoPlantao(usuarioAtual.email, usuarioAtual.nome, usuarioAtual.perfil);
+    }
+
+    function solicitarDadosClientes() {
+      if (!usuarioAtual) return;
+
+      const mensagem = document.getElementById('mensagemMeusPlantoes');
+      const botao = document.getElementById('btnSolicitarDados');
+
+      mensagem.textContent = '';
+      mensagem.className = '';
+      botao.disabled = true;
+      botao.textContent = 'Solicitando...';
+
+      google.script.run
+        .withSuccessHandler(function(resposta) {
+          botao.disabled = false;
+          botao.textContent = 'Solicitar Dados dos Meus Clientes';
+          mensagem.textContent = resposta.mensagem;
+          mensagem.className = resposta.sucesso ? 'sucesso' : 'erro';
+        })
+        .withFailureHandler(function(erro) {
+          botao.disabled = false;
+          botao.textContent = 'Solicitar Dados dos Meus Clientes';
+          mensagem.textContent = 'Erro ao conectar. Tente novamente.';
+          mensagem.className = 'erro';
+          console.error(erro);
+        })
+        .solicitarDadosClientes(usuarioAtual.email, usuarioAtual.nome, usuarioAtual.perfil);
+    }
+
+    // ----------------------------------------
+    // LOGIN
+    // ----------------------------------------
+
+    function fazerLogin() {
+      const email = document.getElementById('email').value.trim();
+      const senha = document.getElementById('senha').value.trim();
+      const mensagem = document.getElementById('mensagemLogin');
+      const botao = document.getElementById('btnEntrar');
+
+      mensagem.textContent = '';
+      mensagem.className = '';
+
+      if (!email || !senha) {
+        mensagem.textContent = 'Preencha e-mail e senha.';
+        mensagem.className = 'erro';
+        return;
+      }
+
+      botao.disabled = true;
+      botao.textContent = 'Entrando...';
+
+      google.script.run
+        .withSuccessHandler(function(resposta) {
+          botao.disabled = false;
+          botao.textContent = 'Entrar';
+
+          if (resposta.sucesso) {
+            mensagem.textContent = '';
+            mostrarPainel(resposta.nome, resposta.email, resposta.perfil, resposta.habilitado, resposta.ativo);
+          } else {
+            mensagem.textContent = resposta.mensagem;
+            mensagem.className = 'erro';
+          }
+        })
+        .withFailureHandler(function(erro) {
+          botao.disabled = false;
+          botao.textContent = 'Entrar';
+          mensagem.textContent = 'Erro ao conectar. Tente novamente.';
+          mensagem.className = 'erro';
+          console.error(erro);
+        })
+        .verificarLogin(email, senha);
+    }
+  </script>
+
+
+  <script>
+    window.mostrarEnviarFotos = function() {
+      if (!window.usuarioAtual && typeof usuarioAtual === 'undefined') return;
+
+      if (typeof esconderTelasExtras === 'function') {
+        esconderTelasExtras();
+      }
+
+      const tela = document.getElementById('enviarFotos');
+      if (tela) {
+        tela.style.setProperty('display', 'flex', 'important');
+      }
+
+      const mensagem = document.getElementById('mensagemFotos');
+      if (mensagem) {
+        mensagem.textContent = '';
+        mensagem.className = '';
+      }
+
+      window.scrollTo(0, 0);
+    };
+  </script>
+
+
+  <script>
+    window.mostrarRetornarCliente = function() {
+      if (typeof usuarioAtual === 'undefined' || !usuarioAtual) return;
+
+      if (typeof esconderTelasExtras === 'function') {
+        esconderTelasExtras();
+      }
+
+      const tela = document.getElementById('retornarCliente');
+      if (tela) {
+        tela.style.setProperty('display', 'flex', 'important');
+      }
+
+      const lista = document.getElementById('listaClientesPendentes');
+      const form = document.getElementById('formRetorno');
+      if (lista) lista.textContent = 'Carregando...';
+      if (form) form.style.setProperty('display', 'none', 'important');
+
+      clienteSelecionado = null;
+
+      google.script.run
+        .withSuccessHandler(function(resposta) {
+          if (!lista) return;
+
+          if (!resposta || !resposta.sucesso) {
+            lista.textContent = resposta && resposta.mensagem
+              ? resposta.mensagem
+              : 'Não foi possível carregar os clientes.';
+            return;
+          }
+
+          const clientes = resposta.clientes || [];
+          if (!clientes.length) {
+            lista.textContent = 'Nenhum cliente pendente no momento.';
+            return;
+          }
+
+          lista.innerHTML = '';
+          clientes.forEach(function(cliente) {
+            const card = document.createElement('div');
+            card.style.cssText =
+              'border:1px solid #d7ded9;border-radius:8px;padding:14px;margin:10px 0;text-align:left;';
+
+            const titulo = document.createElement('div');
+            titulo.style.marginBottom = '10px';
+            titulo.innerHTML =
+              '<strong>' + escapeHtml(cliente.codigo || '') + '</strong> — ' +
+              escapeHtml(cliente.nome || '');
+
+            const botao = document.createElement('button');
+            botao.className = 'btn';
+            botao.textContent = 'Selecionar';
+            botao.onclick = function() {
+              selecionarCliente(cliente);
+            };
+
+            card.appendChild(titulo);
+            card.appendChild(botao);
+            lista.appendChild(card);
+          });
+        })
+        .withFailureHandler(function(erro) {
+          if (lista) lista.textContent = 'Erro ao carregar os clientes pendentes.';
+          console.error(erro);
+        })
+        .listarClientesPendentes(
+          usuarioAtual.email,
+          usuarioAtual.nome,
+          usuarioAtual.perfil
+        );
+
+      window.scrollTo(0, 0);
+    };
+  </script>
+
+  <script>
+    window.PLANTAO_BUILD = '2026-10-05-fix-nav-2';
+    console.info('[Plantão] build:', window.PLANTAO_BUILD);
+  </script>
+
+</body>
+</html>
